@@ -46,8 +46,8 @@ pub fn circle(radius: Float) -> Result(Shape, String) {
 
 pub fn calc_area(shape: Shape) -> Float {
   case shape {
-    Square(side_length) -> arithmetic.square(side_length)
+    Square(side_length) -> arithmetic.square_float(side_length)
     Rectangle(length, width) -> length *. width
-    Circle(radius) -> arithmetic.square(radius) *. elementary.pi()
+    Circle(radius) -> arithmetic.square_float(radius) *. elementary.pi()
   }
 }

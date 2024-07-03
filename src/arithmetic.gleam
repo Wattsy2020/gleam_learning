@@ -25,7 +25,11 @@ pub fn fast_power(base: Int, exponent: Int) -> Float {
   }
 }
 
-pub fn square(base: Float) -> Float {
+pub fn square_int(base: Int) -> Int {
+  base * base
+}
+
+pub fn square_float(base: Float) -> Float {
   base *. base
 }
 

@@ -21,10 +21,3 @@ pub fn approx_be(
       }
   }
 }
-
-pub fn have_result(result: Result(a, b)) -> a {
-  case result {
-    Ok(value) -> value
-    Error(_) -> panic as "Result type was not expected to have an error"
-  }
-}
