@@ -32,5 +32,5 @@ pub fn square(base: Float) -> Float {
 pub fn basics() -> Float {
   let immutable_var = const_int
   immutable_var * 2
-  |> fast_power(2)
+  |> fast_power(3)
 }
