@@ -1,21 +1,21 @@
-import gleam/int
-
 const const_int = 2
 
-// todo: figure out how to loop to evaluate the power
-fn power(a: Int, b: Int) -> Int {
-  a * b
+pub fn fast_power(base: Int, exponent: Int) -> Int {
+  case exponent {
+    0 -> 1
+    _ ->
+      case exponent % 2 == 0 {
+        True -> {
+          let half_powered = fast_power(base, exponent / 2)
+          half_powered * half_powered
+        }
+        False -> base * fast_power(base, exponent - 1)
+      }
+  }
 }
 
-// todo: figure out how to loop to evaluate this properly
-fn power_float(a: Float, b: Float) -> Float {
-  a *. b
-}
-
-pub fn basics() -> Float {
+pub fn basics() -> Int {
   let immutable_var = const_int
   immutable_var * 2
-  |> power(2)
-  |> int.to_float
-  |> power_float(2.3)
+  |> fast_power(2)
 }
