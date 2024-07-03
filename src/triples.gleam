@@ -1,21 +1,11 @@
 import arithmetic
-import gleam/float
 import gleam/int
 import gleam/list
-
-const epsilon = 0.000001
-
-fn is_near_integer(x: Float) -> Bool {
-  x
-  |> float.truncate
-  |> int.to_float
-  |> float.loosely_equals(x, epsilon)
-}
 
 fn is_triple(x: Int, y: Int) -> Bool {
   let sum_squares = arithmetic.square_int(x) + arithmetic.square_int(y)
   case int.square_root(sum_squares) {
-    Ok(square_root) -> is_near_integer(square_root)
+    Ok(square_root) -> arithmetic.is_near_integer(square_root)
     Error(_) -> False
   }
 }

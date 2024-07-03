@@ -1,4 +1,6 @@
 import arithmetic
+import extended_should
+import gleam/float
 import gleam/int
 import gleam/list
 import gleeunit/should
@@ -46,4 +48,18 @@ pub fn fast_power_negative_four_test() {
     arithmetic.fast_power(input, -4) == expected
   })
   |> should.be_true
+}
+
+// this should really be a property based test
+pub fn is_near_integer_true_test() {
+  [-0.0, 0.0, -5.0, 5.0, 1_000_000.000000001]
+  |> extended_should.all_satisfy(arithmetic.is_near_integer, float.to_string)
+}
+
+pub fn is_near_integer_false_test() {
+  [-0.0001, 0.0001, -0.5, 0.5, 0.9, 0.99, 0.999, 0.9999, 2.001, 4.001]
+  |> extended_should.all_satisfy(
+    fn(num) { !arithmetic.is_near_integer(num) },
+    float.to_string,
+  )
 }

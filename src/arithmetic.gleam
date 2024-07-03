@@ -1,6 +1,9 @@
+import gleam/float
 import gleam/int
 
 const const_int = 2
+
+const epsilon = 0.000001
 
 /// Evaluate base to the power of a >= 0 exponent
 fn fast_power_positive(base: Int, exponent: Int) -> Int {
@@ -31,6 +34,13 @@ pub fn square_int(base: Int) -> Int {
 
 pub fn square_float(base: Float) -> Float {
   base *. base
+}
+
+pub fn is_near_integer(x: Float) -> Bool {
+  x
+  |> float.truncate
+  |> int.to_float
+  |> float.loosely_equals(x, epsilon)
 }
 
 pub fn basics() -> Float {
