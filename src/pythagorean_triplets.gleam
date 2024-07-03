@@ -11,4 +11,14 @@ pub fn main() {
     "Count of nums greater than 2: "
     <> { collections.listresult() |> int.to_string },
   )
+  {
+    let #(string_result, sum_result) = collections.tuples()
+    io.println(
+      "Result of tuple calculation: ("
+      <> string_result
+      <> ", "
+      <> int.to_string(sum_result)
+      <> ")",
+    )
+  }
 }

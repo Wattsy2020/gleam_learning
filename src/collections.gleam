@@ -17,3 +17,12 @@ pub fn listresult() -> Int {
   nums
   |> count(fn(x) { x > 2 })
 }
+
+pub fn tuples() -> #(String, Int) {
+  [#("This", 0), #("is", 1), #("a", 2), #("tuple", 3)]
+  |> list.fold(#("", 0), fn(acc_tuple, tuple) {
+    let #(acc_string, acc_sum) = acc_tuple
+    let #(string, num) = tuple
+    #(acc_string <> " " <> string, acc_sum + num)
+  })
+}
