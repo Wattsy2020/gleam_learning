@@ -14,6 +14,10 @@ pub fn fast_power(base: Int, exponent: Int) -> Int {
   }
 }
 
+pub fn square(base: Float) -> Float {
+  base *. base
+}
+
 pub fn basics() -> Int {
   let immutable_var = const_int
   immutable_var * 2
