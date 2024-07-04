@@ -16,19 +16,13 @@ pub fn triples_test() {
 
 pub fn triples_property_test() {
   triples.calc_triples(1000)
-  |> extended_should.all_satisfy(
-    fn(tuple) {
-      let #(x, y) = tuple
-      x > 0
-      && y > 0
-      && arithmetic.is_near_integer(result.unwrap(
-        int.square_root(arithmetic.square_int(x) + arithmetic.square_int(y)),
-        0.5,
-      ))
-    },
-    fn(tuple) {
-      let #(x, y) = tuple
-      "(" <> int.to_string(x) <> ", " <> int.to_string(y) <> ")"
-    },
-  )
+  |> extended_should.all_satisfy(fn(tuple) {
+    let #(x, y) = tuple
+    x > 0
+    && y > 0
+    && arithmetic.is_near_integer(result.unwrap(
+      int.square_root(arithmetic.square_int(x) + arithmetic.square_int(y)),
+      0.5,
+    ))
+  })
 }

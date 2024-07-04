@@ -1,6 +1,7 @@
-import collections
 import gleam/float
-import gleam/option.{type Option, None, Some}
+import gleam/list
+import gleam/option.{type Option}
+import gleam/string
 import gleam_community/maths/piecewise
 
 const default_epsilon = 0.000_000_001
@@ -19,18 +20,12 @@ pub fn approx_be(actual: Float, expected: Float, epsilon: Option(Float)) -> Nil 
   }
 }
 
-pub fn all_satisfy(
-  results: List(a),
-  predicate: fn(a) -> Bool,
-  to_string: fn(a) -> String,
-) -> Nil {
-  case
-    collections.first_satisfying(results, fn(result) { !predicate(result) })
-  {
-    None -> Nil
-    Some(unmatching) ->
+pub fn all_satisfy(results: List(a), predicate: fn(a) -> Bool) -> Nil {
+  case list.find(results, fn(result) { !predicate(result) }) {
+    Error(_) -> Nil
+    Ok(unmatching) ->
       panic as {
-        "Value: " <> to_string(unmatching) <> " did not satisfy the predicate"
+        "Value: " <> string.inspect(unmatching) <> " violated the predicate"
       }
   }
 }

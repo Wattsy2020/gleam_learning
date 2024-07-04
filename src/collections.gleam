@@ -1,5 +1,4 @@
 import gleam/list
-import gleam/option.{type Option, None, Some}
 
 const nums = [1, 2, 3, 4]
 
@@ -26,15 +25,4 @@ pub fn tuples() -> #(String, Int) {
     let #(string, num) = tuple
     #(acc_string <> " " <> string, acc_sum + num)
   })
-}
-
-pub fn first_satisfying(list: List(a), predicate: fn(a) -> Bool) -> Option(a) {
-  case list {
-    [] -> None
-    [first, ..remaining] ->
-      case predicate(first) {
-        True -> Some(first)
-        False -> first_satisfying(remaining, predicate)
-      }
-  }
 }
