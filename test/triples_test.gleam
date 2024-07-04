@@ -19,7 +19,9 @@ pub fn triples_property_test() {
   |> extended_should.all_satisfy(
     fn(tuple) {
       let #(x, y) = tuple
-      arithmetic.is_near_integer(result.unwrap(
+      x > 0
+      && y > 0
+      && arithmetic.is_near_integer(result.unwrap(
         int.square_root(arithmetic.square_int(x) + arithmetic.square_int(y)),
         0.5,
       ))
