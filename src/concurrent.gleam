@@ -18,10 +18,12 @@ pub fn iterate_results(callbacks: List(fn() -> a)) -> iterator.Iterator(a) {
   })
 
   // forgive me, for I have created a mutable variable using a subject
-  //let num_results_subject = process.new_subject()
-  //process.send(num_results_subject, 0)
+  let num_results_subject = process.new_subject()
+  process.send(num_results_subject, 0)
 
   iterator.Iterator(next: fn(timeout) {
+    let assert Ok(num_results_processed) =
+      process.receive(num_results_subject, 1)
     case
       process.receive(
         all_results_subject,
@@ -29,12 +31,14 @@ pub fn iterate_results(callbacks: List(fn() -> a)) -> iterator.Iterator(a) {
       )
     {
       Ok(result) -> {
-        //let assert Ok(num_results_processed) =
-        //  process.receive(num_results_subject, 1)
-        //process.send(num_results_subject, num_results_processed + 1)
+        process.send(num_results_subject, num_results_processed + 1)
         Ok(result)
       }
-      Error(_) -> Error(iterator.Timeout)
+      Error(_) ->
+        case num_results_processed == list.length(callbacks) {
+          True -> Error(iterator.IteratorEnd)
+          False -> Error(iterator.Timeout)
+        }
     }
   })
 }
