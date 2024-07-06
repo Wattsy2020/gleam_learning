@@ -1,9 +1,11 @@
 import arithmetic
+import birl/duration
 import collections
 import gleam/float
 import gleam/int
 import gleam/io
 import gleam/string
+import iterator
 import triples
 
 pub fn main() {
@@ -22,4 +24,7 @@ pub fn main() {
     "Pythagorean Triples evaluated in parallel: "
     <> string.inspect(triples.calc_triples_parallel(2000)),
   )
+  io.println("Iterating over pythagorean triples results")
+  triples.calc_triples_iterator(20_000)
+  |> iterator.log_iterator(duration.milli_seconds(10))
 }

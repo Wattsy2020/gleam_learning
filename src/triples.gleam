@@ -4,6 +4,7 @@ import function
 import gleam/int
 import gleam/list
 import gleam/otp/task
+import iterator
 
 fn is_triple(x: Int, y: Int) -> Bool {
   let sum_squares = arithmetic.square_int(x) + arithmetic.square_int(y)
@@ -40,4 +41,10 @@ pub fn calc_triples_parallel(n: Int) -> List(#(Int, Int)) {
   })
   |> concurrent.await_all_forever
   |> list.flatten
+}
+
+pub fn calc_triples_iterator(n: Int) -> iterator.Iterator(List(#(Int, Int))) {
+  list.range(1, n)
+  |> list.map(fn(first_num) { fn() { calc_triples_for(first_num, n) } })
+  |> concurrent.iterate_results
 }
