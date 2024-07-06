@@ -18,4 +18,8 @@ pub fn main() {
   io.println(
     "Pythagorean Triples: " <> string.inspect(triples.calc_triples(100)),
   )
+  io.println(
+    "Pythagorean Triples evaluated in parallel: "
+    <> string.inspect(triples.calc_triples_parallel(2000)),
+  )
 }
