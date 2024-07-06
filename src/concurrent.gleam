@@ -11,32 +11,24 @@ pub fn await_all_forever(tasks: List(task.Task(a))) -> List(a) {
 }
 
 /// Start the callbacks as processes and return an iterator over their results
-pub fn iterate_results(callbacks: List(fn() -> a)) -> iterator.Iterator(a) {
+pub fn iterate_results(callbacks: List(fn() -> a)) -> iterator.Iterator(Int, a) {
   let all_results_subject = process.new_subject()
   list.each(callbacks, fn(callback) {
     process.start(fn() { process.send(all_results_subject, callback()) }, False)
   })
 
-  // forgive me, for I have created a mutable variable using a subject
-  let num_results_subject = process.new_subject()
-  process.send(num_results_subject, 0)
-
-  iterator.Iterator(next: fn(timeout) {
-    let assert Ok(num_results_processed) =
-      process.receive(num_results_subject, 1)
+  let num_expected_results = list.length(callbacks)
+  iterator.Iterator(initial_input: 0, next: fn(num_processed, timeout) {
     case
       process.receive(
         all_results_subject,
         duration.blur_to(timeout, duration.MilliSecond),
       )
     {
-      Ok(result) -> {
-        process.send(num_results_subject, num_results_processed + 1)
-        Ok(result)
-      }
+      Ok(result) -> Ok(iterator.Output(result, num_processed + 1))
       Error(_) ->
-        case num_results_processed == list.length(callbacks) {
-          True -> Error(iterator.IteratorEnd)
+        case num_processed == num_expected_results {
+          True -> Ok(iterator.Done)
           False -> Error(iterator.Timeout)
         }
     }

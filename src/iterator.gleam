@@ -1,49 +1,60 @@
 import birl/duration
-import gleam/io
 import gleam/result
 
 pub type IteratorError {
   Timeout
-  IteratorEnd
   Other(details: String)
 }
 
-pub type IteratorReadError {
-  ReadTimeout
-  ReadOther(details: String)
+pub type IteratorOutput(input, output) {
+  Output(output: output, next_input: input)
+  Done
 }
 
-pub type Iterator(a) {
-  Iterator(next: fn(duration.Duration) -> Result(a, IteratorError))
+pub type Iterator(input, output) {
+  Iterator(
+    initial_input: input,
+    next: fn(input, duration.Duration) ->
+      Result(IteratorOutput(input, output), IteratorError),
+  )
 }
 
 // an fmap to make Iterator a functor
-pub fn map(iterator: Iterator(a), function: fn(a) -> b) -> Iterator(b) {
-  Iterator(next: fn(timeout) { result.map(iterator.next(timeout), function) })
+pub fn map(
+  iterator: Iterator(input, output),
+  function: fn(output) -> new_output,
+) -> Iterator(input, new_output) {
+  Iterator(iterator.initial_input, next: fn(input, timeout) {
+    use iterator_output <- result.map(iterator.next(input, timeout))
+    case iterator_output {
+      Output(output, input) -> Output(function(output), input)
+      Done -> Done
+    }
+  })
 }
 
-/// Print the results of the iterator one by one
-pub fn log_iterator(iterator: Iterator(a), timeout: duration.Duration) -> Nil {
-  case iterator.next(timeout) {
-    Ok(first_elem) -> {
-      io.debug(first_elem)
-      log_iterator(iterator, timeout)
+fn do_to_list(
+  iterator_input: input,
+  iterator: Iterator(input, output),
+  timeout: duration.Duration,
+) -> Result(List(output), IteratorError) {
+  case iterator.next(iterator_input, timeout) {
+    Ok(Output(output, next_input)) -> {
+      use remaining_elems <- result.map(do_to_list(
+        next_input,
+        iterator,
+        timeout,
+      ))
+      [output, ..remaining_elems]
     }
-    _ -> Nil
+    Ok(Done) -> Ok([])
+    Error(error) -> Error(error)
   }
 }
 
 pub fn to_list(
-  iterator: Iterator(a),
+  iterator: Iterator(input, output),
   timeout: duration.Duration,
-) -> Result(List(a), IteratorReadError) {
-  case iterator.next(timeout) {
-    Ok(first_elem) -> {
-      use remaining_elems <- result.map(to_list(iterator, timeout))
-      [first_elem, ..remaining_elems]
-    }
-    Error(IteratorEnd) -> Ok([])
-    Error(Timeout) -> Error(ReadTimeout)
-    Error(Other(details)) -> Error(ReadOther(details))
-  }
+) -> Result(List(output), IteratorError) {
+  do_to_list(iterator.initial_input, iterator, timeout)
 }
