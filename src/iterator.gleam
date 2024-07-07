@@ -1,4 +1,5 @@
 import birl/duration
+import gleam/list
 import gleam/result
 
 pub type IteratorError {
@@ -37,13 +38,12 @@ pub fn map(iterator: Iterator(a), function: fn(a) -> b) -> Iterator(b) {
 fn do_to_list(
   next: NextFunction(a),
   timeout: duration.Duration,
+  result_list: List(a),
 ) -> Result(List(a), IteratorError) {
   case next(timeout) {
-    Ok(Output(output, next_function)) -> {
-      use remaining_elems <- result.map(do_to_list(next_function, timeout))
-      [output, ..remaining_elems]
-    }
-    Ok(Done) -> Ok([])
+    Ok(Output(output, next_function)) ->
+      do_to_list(next_function, timeout, [output, ..result_list])
+    Ok(Done) -> Ok(list.reverse(result_list))
     Error(error) -> Error(error)
   }
 }
@@ -52,7 +52,7 @@ pub fn to_list(
   iterator: Iterator(a),
   timeout: duration.Duration,
 ) -> Result(List(a), IteratorError) {
-  do_to_list(iterator.next, timeout)
+  do_to_list(iterator.next, timeout, [])
 }
 
 fn do_iterate_all(
