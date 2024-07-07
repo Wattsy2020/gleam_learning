@@ -54,3 +54,31 @@ pub fn to_list(
 ) -> Result(List(a), IteratorError) {
   do_to_list(iterator.next, timeout)
 }
+
+fn do_from_list(list: List(a)) -> NextFunction(a) {
+  fn(_timeout) {
+    case list {
+      [] -> Ok(Done)
+      [first, ..remaining] -> Ok(Output(first, do_from_list(remaining)))
+    }
+  }
+}
+
+pub fn from_list(list: List(a)) -> Iterator(a) {
+  Iterator(do_from_list(list))
+}
+
+fn do_concat(first: NextFunction(a), second: NextFunction(a)) -> NextFunction(a) {
+  fn(timeout) {
+    case first(timeout) {
+      Ok(Output(result, next_function)) ->
+        Ok(Output(result, do_concat(next_function, second)))
+      Ok(Done) -> second(timeout)
+      Error(error) -> Error(error)
+    }
+  }
+}
+
+pub fn concat(first: Iterator(a), second: Iterator(a)) -> Iterator(a) {
+  Iterator(do_concat(first.next, second.next))
+}
