@@ -55,6 +55,25 @@ pub fn to_list(
   do_to_list(iterator.next, timeout)
 }
 
+fn do_iterate_all(
+  next: NextFunction(a),
+  timeout: duration.Duration,
+) -> Result(Nil, IteratorError) {
+  case next(timeout) {
+    Ok(Output(_, next_function)) -> do_iterate_all(next_function, timeout)
+    Ok(Done) -> Ok(Nil)
+    Error(error) -> Error(error)
+  }
+}
+
+/// Iterate over all elements in the iterator, performing any side effects caused by iteration
+pub fn iterate_all(
+  iterator: Iterator(a),
+  timeout: duration.Duration,
+) -> Result(Nil, IteratorError) {
+  do_iterate_all(iterator.next, timeout)
+}
+
 fn do_from_list(list: List(a)) -> NextFunction(a) {
   fn(_timeout) {
     case list {
