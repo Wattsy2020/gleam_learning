@@ -43,9 +43,7 @@ pub fn calc_triples_parallel(n: Int) -> List(#(Int, Int)) {
   |> list.flatten
 }
 
-pub fn calc_triples_iterator(
-  n: Int,
-) -> iterator.Iterator(Int, List(#(Int, Int))) {
+pub fn calc_triples_iterator(n: Int) -> iterator.Iterator(List(#(Int, Int))) {
   list.range(1, n)
   |> list.map(fn(first_num) { fn() { calc_triples_for(first_num, n) } })
   |> concurrent.iterate_results
