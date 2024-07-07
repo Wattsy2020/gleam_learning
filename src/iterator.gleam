@@ -101,3 +101,18 @@ fn do_concat(first: NextFunction(a), second: NextFunction(a)) -> NextFunction(a)
 pub fn concat(first: Iterator(a), second: Iterator(a)) -> Iterator(a) {
   Iterator(do_concat(first.next, second.next))
 }
+
+fn do_flatten(next: NextFunction(List(a))) -> NextFunction(a) {
+  fn(timeout) {
+    case next(timeout) {
+      Ok(Output(result_list, next_function)) ->
+        do_concat(do_from_list(result_list), do_flatten(next_function))(timeout)
+      Ok(Done) -> Ok(Done)
+      Error(error) -> Error(error)
+    }
+  }
+}
+
+pub fn flatten(iterator: Iterator(List(a))) -> Iterator(a) {
+  Iterator(do_flatten(iterator.next))
+}

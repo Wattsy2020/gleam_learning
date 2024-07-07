@@ -50,6 +50,7 @@ pub fn main() {
 
   io.println("Iterating over pythagorean triples results")
   triples.calc_triples_iterator(20_000)
+  |> iterator.flatten
   |> iterator.map(io.debug)
   |> iterator.to_list(duration.milli_seconds(10))
   |> io.debug

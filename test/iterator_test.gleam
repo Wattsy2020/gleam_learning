@@ -49,3 +49,19 @@ pub fn concat_test() {
   }
   list.concat([list1, list2]) == concatenated_list
 }
+
+pub fn flatten_test() {
+  use lists <- qtest.given(generator.list_generic(
+    generator.list_generic(generator.int_uniform(), 0, 100),
+    0,
+    10,
+  ))
+
+  let assert Ok(flattened_list) = {
+    lists
+    |> iterator.from_list
+    |> iterator.flatten
+    |> iterator.to_list(duration.milli_seconds(0))
+  }
+  list.flatten(lists) == flattened_list
+}
