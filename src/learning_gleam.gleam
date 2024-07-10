@@ -9,6 +9,7 @@ import gleam/io
 import gleam/string
 import iterator
 import triples
+import xml
 
 pub fn main() {
   io.println("Result of basics: " <> arithmetic.basics() |> float.to_string)
@@ -49,9 +50,15 @@ pub fn main() {
   io.debug(sleep_order)
 
   io.println("Iterating over pythagorean triples results")
-  triples.calc_triples_iterator(20_000)
-  |> iterator.flatten
-  |> iterator.map(io.debug)
-  |> iterator.to_list(duration.milli_seconds(10))
-  |> io.debug
+  let _ =
+    triples.calc_triples_iterator(2000)
+    |> iterator.flatten
+    |> iterator.map(io.debug)
+    |> iterator.to_list(duration.milli_seconds(10))
+    |> io.debug
+
+  io.println("Valid XML")
+  io.debug(xml.parse_xml("<hello>world</hello>"))
+  io.println("Some invalid XML")
+  io.debug(xml.parse_xml("<hello>world</wrongtag>"))
 }
